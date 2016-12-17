@@ -1,6 +1,8 @@
 #!/usr/bin/env julia
 
-# Fake data generator. Binds PUB socket to tcp://*:5556 and publishes data
+# Publish simulated data continuously over a ZMQ socket.
+# Binds PUB socket to tcp://*:5556
+
 using ZMQ
 
 context = Context()
@@ -9,9 +11,9 @@ ZMQ.bind(socket, "tcp://*:5556")
 
 time_ms() = round(Int, time_ns()/1e6)
 
+alpha = 0.3 # Smoothing parameter in [0,1] (smaller is stronger)
 start = time_ms()
 ylist = zeros(2)
-alpha = 0.3
 
 println("Sending data...")
 while true
@@ -26,9 +28,9 @@ while true
     ylist = [y,s]
 
     # Print to console and send out the message string
-    line = "t:$(time_ms() - start),y:$y,s:$s"
-    println(line)
-    ZMQ.send(socket, line)
+    msg = "t:$(time_ms() - start),y:$y,s:$s"
+    println(msg)
+    ZMQ.send(socket, msg)
 
     sleep(0.02) # ~50 Hz
 end
