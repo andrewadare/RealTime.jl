@@ -1,3 +1,5 @@
+using ZMQ
+using LibSerialPort
 
 # Message accessors for ZMQ and SerialPort
 get_message(socket::ZMQ.Socket) = unsafe_string(ZMQ.recv(socket))

@@ -1,11 +1,13 @@
 #!/usr/bin/env julia
 
+# Load directly while developing. Once stable, add module using Pkg.clone()
+# and remove this line.
+include("../src/RealTime.jl")
+
 using Plots
 using ZMQ
 using LibSerialPort
-
-include("util/conversions.jl") # For csv2dict and keys_ok
-include("util/accessors.jl") # For get_message and get_data_source
+using RealTime
 
 # Plot backend
 gr(size=(900, 500))
