@@ -8,13 +8,13 @@ using Plots
 using ZMQ
 using LibSerialPort
 using RealTime
+using JSON
 
 # Plot backend
 gr(size=(900, 500))
 
 context = Context()
-data_source = get_data_source(context, "tcp://localhost:5556", "t:")
-fields = ["t","y","s"]
+data_source = get_data_source(context, "tcp://localhost:5556")
 
 # Number of points to display
 n = 500
@@ -24,10 +24,9 @@ x = Float64[]
 y, s = Float64[], Float64[]
 
 while true
-    # Get message as a String, convert to a Dict, and validate
+    # Get message as a String and convert to a Dict
     msg = get_message(data_source)
-    d = csv2dict(msg, fields)
-    keys_ok(d, fields) || continue
+    d = JSON.parse(msg)
 
     # Manage arrays as FIFO queues
     push!(x, d["t"]/1000) # ms to seconds

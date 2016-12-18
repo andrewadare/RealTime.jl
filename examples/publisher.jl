@@ -4,6 +4,7 @@
 # Binds PUB socket to tcp://*:5556
 
 using ZMQ
+using JSON
 
 context = Context()
 socket = Socket(context, PUB)
@@ -27,8 +28,8 @@ while true
 
     ylist = [y,s]
 
-    # Print to console and send out the message string
-    msg = "t:$(time_ms() - start),y:$y,s:$s"
+    # Print to console and send out the message string in JSON format
+    msg = JSON.json(Dict("t"=>time_ms() - start, "y"=>y, "s"=>s))
     println(msg)
     ZMQ.send(socket, msg)
 
