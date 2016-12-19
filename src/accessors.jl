@@ -6,9 +6,11 @@ get_message(socket::ZMQ.Socket) = String(unsafe_string(ZMQ.recv(socket)))
 get_message(sp::SerialPort) = readuntil(sp, '\n', 100)
 
 """
-Return a ZMQ.Socket
+Return a ZMQ subscriber socket for the provided address.
+All messages except those beginning with filter_prefix will be ignored.
+If filter_prefix is an empty string (the default), no messages are ignored.
 """
-function get_data_source(context::ZMQ.Context, address::String, filter_key::String="")
+function get_data_source(context::ZMQ.Context, address::String, filter_prefix::String="")
 
     # Create a subscriber socket and attempt connection to publisher
     socket = Socket(context, SUB)
@@ -19,9 +21,8 @@ function get_data_source(context::ZMQ.Context, address::String, filter_key::Stri
         quit()
     end
 
-    # Subscribe to published messages, filtering on provided string.
-    # If filter_key = "", do not filter.
-    ZMQ.set_subscribe(socket, filter_key)
+    # Subscribe to published messages, filtering on provided filter_prefix string
+    ZMQ.set_subscribe(socket, filter_prefix)
 
     println("Connected to data publisher at $address")
     return socket
